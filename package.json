@@ -1,0 +1,22 @@
+{
+  "name": "scrapehomework",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "cheerio": "^1.0.0-rc.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "^4.15.4",
+    "express-handlebars": "^3.0.0",
+    "mongojs": "^2.4.1",
+    "mongoose": "^4.11.12",
+    "morgan": "~1.8.1",
+    "nodejs": "0.0.0",
+    "request": "^2.82.0",
+    "serve-favicon": "~2.4.2"
+  }
+}
