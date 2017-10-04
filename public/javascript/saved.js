@@ -3,6 +3,24 @@
  */
 /* global bootbox */
 $(document).ready(function() {
+
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+        //takes url parameter from browser
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+            //searching for key value pair in url string
+        }
+    };
+
     // Getting a reference to the article container div we will be rendering all articles inside of
     var articleContainer = $(".article-container");
     // Adding event listeners for dynamically generated buttons for deleting articles,
@@ -14,12 +32,18 @@ $(document).ready(function() {
 
 
     // initPage kicks everything off when the page is loaded
-   // initPage();
+    // initPage();
 
     function initPage() {
         // Empty the article container, run an AJAX request for any saved headlines
         articleContainer.empty();
-        $.get("/api/headlines").then(function(data) {
+        var urlParams = getUrlParameter('selected');
+        var url = '/api/headlines';
+        if(urlParams){
+            url = url + "?selected=" + urlParams;
+        }
+
+        $.get(url).then(function(data) {
             // If we have headlines, render them to the page
             if (data && data.length) {
                 renderArticles(data);
@@ -42,31 +66,59 @@ $(document).ready(function() {
     }
 
     function createPanel(article) {
-        // This functiont takes in a single JSON object for an article/headline
+        // This function takes in a single JSON object for an article/headline
         // It constructs a jQuery element containing all of the formatted HTML for the
         // article panel
+
+
         var panel = $(
             [
-                "<div class='panel panel-default'>",
-                "<div class='panel-heading'>",
+                "<div class='row'>",
+                "<div class='col 12'>",
+                "<div class='card'>",
+                "<div class='card-body'>",
+                "<div class='d-flex justify-content-end'>",
+                "<div class='mr-auto p-2'>",
+                article.logo,
+                "</div>",
+
+                "<div>",
                 "<h3>",
-                "<a class='article-link' target='_blank' href='" + article.link + "'>",
-                article.title,
-                "</a>",
-                "<a class='btn btn-danger remove'>",
+                "<button class='btn btn-danger remove'>",
                 "Remove Article",
-                "</a>",
+                "</button>",
+                "</h3>",
+                "</div>",
+
+                "<div>",
+                "<h3>",
                 "<label class='select-label'>Selected</label>",
                 "<input class='select-box' type='checkbox'" + ((article.selected) ?  "checked" : '') + "/>",
                 "</h3>",
                 "</div>",
-                "<div class='panel-body'>",
+                "</div>",
+
+                "</div class='body'>",
+                "<p class='card-text'>",
+                "<h3>",
+                "<a class='article-link' target='_blank' href='" + article.link + "'>",
+                article.title,
+                "</a>",
+                "</h3>",
+                "</p>",
+
+                "<div class='card-text'>",
                 article.summary,
                 "<div>",
                 article.byline,
                 "</div>",
                 "<div>",
                 "<img src='", article.image,"'></img>",
+                "</div>",
+                "</div>",
+                "</div>",
+
+                "</div>",
                 "</div>",
                 "</div>",
                 "</div>"
@@ -104,7 +156,7 @@ $(document).ready(function() {
     function handleArticleDelete() {
         // This function handles deleting articles/headlines
         // We grab the id of the article to delete from the panel element the delete button sits inside
-        var articleToDelete = $(this).parents(".panel").data();
+        var articleToDelete = $(this).closest(".row").data();
         // Using a delete method here just to be semantic since we are deleting an article/headline
         $.ajax({
             method: "DELETE",
@@ -129,7 +181,7 @@ $(document).ready(function() {
     }
 
     function handleArticleSelection(){
-        var article = $(this).parents('.panel').data();
+        var article = $(this).closest(".row").data();
         var selected = $(this).is(':checked');
         var url = '/api/headlines/' + article._id;
 

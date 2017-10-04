@@ -22,6 +22,10 @@ var scrape = function(cb) {
         // Make an empty array to save our article info
         var articles = [];
 
+        var logo = $('#jalopnik-svgid').html();
+        logo = '<svg width="100%" height="100%">' + logo + "</svg>";
+
+
         // Now, find and loop through each element that has the "theme-summary" class
         // (i.e, the section holding the articles)
         $(".post-wrapper").each(function(i, element) {
@@ -29,7 +33,10 @@ var scrape = function(cb) {
 
             // Then we grab the inner text of the this element and store it
             // to the head variable. This is the article headline
-            var title = $(element).find("a.js_entry-link").text();
+            var title = $(element).find("h1>a.js_entry-link").text();
+
+            var time = $(element).find("time>a.js_entry-link").text();
+            title = title + " " + time;
 
             // Grab the URL of the article
             var link = $(element).find("a.js_entry-link").attr("href");
@@ -58,7 +65,10 @@ var scrape = function(cb) {
                     link: link,
                     byline: byline,
                     image: image,
-                    summary: summary
+                    summary: summary,
+                    logo: logo,
+                    selected: false
+
                 };
 
                 articles.push(dataToAdd);
@@ -71,6 +81,7 @@ var scrape = function(cb) {
 
 // Export the function, so other files in our backend can use it
 module.exports = scrape;
+
 
 
 
